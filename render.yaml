@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: olms
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma db push && node prisma/seed.js && NODE_ENV=production node .next/standalone/server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        value: file:/opt/render/project/src/.data/custom.db
