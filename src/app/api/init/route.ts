@@ -4,8 +4,11 @@ import { hashPassword } from '@/lib/auth';
 
 export async function GET() {
   try {
+<<<<<<< HEAD
     console.log('Initializing database...');
     
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     // Check if admin exists
     const existingAdmin = await db.user.findUnique({
       where: { username: 'admin' }
@@ -20,10 +23,15 @@ export async function GET() {
           password: hashedPassword,
           name: 'Administrator',
           role: 'ADMIN',
+<<<<<<< HEAD
           status: 'ACTIVE',
         }
       });
       console.log('Created admin user');
+=======
+        }
+      });
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     }
     
     // Create default branch if not exists
@@ -39,7 +47,10 @@ export async function GET() {
           status: 'ACTIVE',
         }
       });
+<<<<<<< HEAD
       console.log('Created default branch');
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     }
     
     // Initialize default settings
@@ -59,12 +70,18 @@ export async function GET() {
       
       if (!existing) {
         await db.setting.create({ data: setting });
+<<<<<<< HEAD
         console.log(`Created setting: ${setting.key}`);
       }
     }
     
     console.log('Database initialized successfully');
     
+=======
+      }
+    }
+    
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     return NextResponse.json({ 
       success: true, 
       message: 'System initialized successfully' 
@@ -72,7 +89,11 @@ export async function GET() {
   } catch (error) {
     console.error('Init error:', error);
     return NextResponse.json(
+<<<<<<< HEAD
       { error: 'Initialization failed', details: error instanceof Error ? error.message : 'Unknown error' },
+=======
+      { error: 'Initialization failed' },
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
       { status: 500 }
     );
   }

@@ -79,6 +79,7 @@ export async function GET() {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     
+<<<<<<< HEAD
     const monthlyLoansRaw = await db.$queryRaw<Array<{ month: string; count: bigint; amount: number | null }>>`
       SELECT 
         TO_CHAR("createdAt", 'YYYY-MM') as month,
@@ -97,6 +98,19 @@ export async function GET() {
       amount: Number(m.amount || 0)
     }));
     
+=======
+    const monthlyLoans = await db.$queryRaw<Array<{ month: string; count: number; amount: number }>>`
+      SELECT 
+        strftime('%Y-%m', createdAt) as month,
+        COUNT(*) as count,
+        SUM(principalAmount) as amount
+      FROM Loan
+      WHERE createdAt >= datetime(${sixMonthsAgo.toISOString()})
+      GROUP BY strftime('%Y-%m', createdAt)
+      ORDER BY month ASC
+    `;
+    
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     // Get overdue loans
     const overdueLoans = await db.loan.count({
       where: {
@@ -118,6 +132,7 @@ export async function GET() {
       }
     });
     
+<<<<<<< HEAD
     // Format recent payments for display
     const formattedRecentPayments = recentPayments.map(p => ({
       ...p,
@@ -131,6 +146,8 @@ export async function GET() {
       } : null
     }));
     
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     return NextResponse.json({
       stats: {
         totalCustomers,
@@ -148,7 +165,11 @@ export async function GET() {
       loansByStatus: loansByStatus.map(s => ({ status: s.status, count: s._count })),
       loansByRiskZone: loansByRiskZone.map(r => ({ riskZone: r.riskZone, count: r._count })),
       recentLoans,
+<<<<<<< HEAD
       recentPayments: formattedRecentPayments,
+=======
+      recentPayments,
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
       monthlyLoans,
     });
   } catch (error) {

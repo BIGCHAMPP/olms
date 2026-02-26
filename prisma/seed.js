@@ -1,7 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { createHash } from 'crypto';
+<<<<<<< HEAD
 import * as path from 'path';
 import * as fs from 'fs';
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
 
 const prisma = new PrismaClient();
 
@@ -12,6 +15,7 @@ async function hashPassword(password) {
 async function main() {
   console.log('Seeding database...');
   
+<<<<<<< HEAD
   // Ensure database directory exists
   const dbPath = process.env.DATABASE_URL?.replace('file:', '') || './db/custom.db';
   const dbDir = path.dirname(dbPath);
@@ -21,6 +25,8 @@ async function main() {
     console.log(`Created database directory: ${dbDir}`);
   }
   
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
   // Create admin user
   const existingAdmin = await prisma.user.findUnique({
     where: { username: 'admin' }

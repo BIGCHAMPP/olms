@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
     });
     
     // Get latest rates for each metal type and karat
+<<<<<<< HEAD
     const latestRates = await db.$queryRaw<Array<{ metalType: string; karat: number; ratePerGram: number; rateDate: Date }>>`
       SELECT "metalType", karat, "ratePerGram", "rateDate"
       FROM "MetalRate"
@@ -38,6 +39,15 @@ export async function GET(request: NextRequest) {
         SELECT MAX(id) FROM "MetalRate" GROUP BY "metalType", karat
       )
       ORDER BY "metalType", karat
+=======
+    const latestRates = await db.$queryRaw<Array<{ metalType: string; karat: number; ratePerGram: number; rateDate: string }>>`
+      SELECT metalType, karat, ratePerGram, rateDate
+      FROM MetalRate
+      WHERE id IN (
+        SELECT MAX(id) FROM MetalRate GROUP BY metalType, karat
+      )
+      ORDER BY metalType, karat
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     `;
     
     return NextResponse.json({ rates, latestRates });

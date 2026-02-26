@@ -324,6 +324,7 @@ interface DashboardStats {
   totalInterestCollected: number;
 }
 
+<<<<<<< HEAD
 interface CustomerHistory {
   customer: Customer;
   statistics: {
@@ -352,6 +353,8 @@ interface CustomerHistory {
   payments: Payment[];
 }
 
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
 // ============================================
 // LOGIN PAGE COMPONENT
 // ============================================
@@ -637,6 +640,7 @@ export default function OLMSDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-900 flex">
+<<<<<<< HEAD
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div 
@@ -645,6 +649,8 @@ export default function OLMSDashboard() {
         />
       )}
 
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
       {/* Sidebar */}
       <aside
         className={cn(
@@ -1001,6 +1007,7 @@ export default function OLMSDashboard() {
           fetchData();
         }}
       />
+<<<<<<< HEAD
       
       {/* Customer View Modal */}
       {selectedCustomer && (
@@ -1009,6 +1016,8 @@ export default function OLMSDashboard() {
           onClose={() => setSelectedCustomer(null)}
         />
       )}
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     </div>
   );
 }
@@ -1061,6 +1070,7 @@ function DashboardModule({
   ];
 
   return (
+<<<<<<< HEAD
     <div className="space-y-4 md:space-y-6">
       {/* Stats Grid - Responsive 2 columns on mobile, 3 on tablet, 6 on desktop */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
@@ -1074,6 +1084,21 @@ function DashboardModule({
                 <div className="min-w-0">
                   <p className="text-[10px] md:text-xs text-slate-400 truncate">{stat.title}</p>
                   <p className="text-base md:text-xl font-bold text-white truncate">{stat.value}</p>
+=======
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        {statCards.map((stat) => (
+          <Card key={stat.title} className="bg-slate-800 border-slate-700">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={cn("p-2 rounded-lg bg-gradient-to-br", stat.color)}>
+                  <stat.icon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400">{stat.title}</p>
+                  <p className="text-xl font-bold text-white">{stat.value}</p>
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
                 </div>
               </div>
             </CardContent>
@@ -1081,6 +1106,7 @@ function DashboardModule({
         ))}
       </div>
 
+<<<<<<< HEAD
       {/* Charts Row - Stack on mobile */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Monthly Loans Chart */}
@@ -1111,12 +1137,36 @@ function DashboardModule({
                   </BarChart>
                 </ResponsiveContainer>
               )}
+=======
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Monthly Loans Chart */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white">Monthly Loan Disbursement</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthlyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="month" stroke="#9ca3af" />
+                  <YAxis stroke="#9ca3af" />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }}
+                    labelStyle={{ color: '#fff' }}
+                  />
+                  <Bar dataKey="amount" fill="#f59e0b" name="Amount (₹)" />
+                </BarChart>
+              </ResponsiveContainer>
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
             </div>
           </CardContent>
         </Card>
 
         {/* Risk Zone Distribution */}
         <Card className="bg-slate-800 border-slate-700">
+<<<<<<< HEAD
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-base md:text-lg">Risk Zone Distribution</CardTitle>
           </CardHeader>
@@ -1167,12 +1217,56 @@ function DashboardModule({
               <div className="flex items-center gap-1 md:gap-2">
                 <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500" />
                 <span className="text-xs md:text-sm text-slate-400">Red</span>
+=======
+          <CardHeader>
+            <CardTitle className="text-white">Risk Zone Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={riskData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="count"
+                    nameKey="riskZone"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {riskData.map((entry, index) => (
+                      <Cell
+                        key={entry.riskZone}
+                        fill={entry.riskZone === 'GREEN' ? '#22c55e' : entry.riskZone === 'YELLOW' ? '#eab308' : '#ef4444'}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-4 mt-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-green-500" />
+                <span className="text-sm text-slate-400">Green</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                <span className="text-sm text-slate-400">Yellow</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500" />
+                <span className="text-sm text-slate-400">Red</span>
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
+<<<<<<< HEAD
       {/* Recent Activity - Stack on mobile */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Recent Loans */}
@@ -1205,6 +1299,35 @@ function DashboardModule({
                           variant="outline"
                           className={cn(
                             "text-[10px] md:text-xs",
+=======
+      {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Loans */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white">Recent Loans</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[300px]">
+              {recentLoans.length === 0 ? (
+                <p className="text-slate-400 text-center py-8">No recent loans</p>
+              ) : (
+                <div className="space-y-3">
+                  {recentLoans.map((loan) => (
+                    <div key={loan.id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-white">{loan.loanReferenceNumber}</p>
+                        <p className="text-sm text-slate-400">
+                          {loan.customer?.firstName} {loan.customer?.lastName}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium text-amber-400">₹{loan.principalAmount.toLocaleString()}</p>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-xs",
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
                             loan.riskZone === 'GREEN' && "border-green-500 text-green-500",
                             loan.riskZone === 'YELLOW' && "border-yellow-500 text-yellow-500",
                             loan.riskZone === 'RED' && "border-red-500 text-red-500"
@@ -1223,6 +1346,7 @@ function DashboardModule({
 
         {/* Recent Payments */}
         <Card className="bg-slate-800 border-slate-700">
+<<<<<<< HEAD
           <CardHeader className="pb-2">
             <CardTitle className="text-white text-base md:text-lg">Recent Payments</CardTitle>
           </CardHeader>
@@ -1248,6 +1372,28 @@ function DashboardModule({
                       <div className="text-right ml-2">
                         <p className="font-medium text-green-400 text-sm md:text-base">₹{payment.amount.toLocaleString()}</p>
                         <p className="text-[10px] md:text-xs text-slate-400">{payment.paymentType}</p>
+=======
+          <CardHeader>
+            <CardTitle className="text-white">Recent Payments</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[300px]">
+              {recentPayments.length === 0 ? (
+                <p className="text-slate-400 text-center py-8">No recent payments</p>
+              ) : (
+                <div className="space-y-3">
+                  {recentPayments.map((payment) => (
+                    <div key={payment.id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-white">{payment.paymentId}</p>
+                        <p className="text-sm text-slate-400">
+                          {payment.loan?.customer?.firstName} {payment.loan?.customer?.lastName}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium text-green-400">₹{payment.amount.toLocaleString()}</p>
+                        <p className="text-xs text-slate-400">{payment.paymentType}</p>
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
                       </div>
                     </div>
                   ))}
@@ -1262,6 +1408,7 @@ function DashboardModule({
 }
 
 // ============================================
+<<<<<<< HEAD
 // CUSTOMER VIEW MODAL
 // ============================================
 
@@ -1624,6 +1771,8 @@ function CustomerViewModal({
 }
 
 // ============================================
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
 // CUSTOMER MODULE
 // ============================================
 
@@ -2125,6 +2274,7 @@ function PaymentModule({
   setCurrentPage: (p: number) => void;
   onRefresh: () => void;
 }) {
+<<<<<<< HEAD
   const [downloading, setDownloading] = useState<string | null>(null);
 
   const downloadBill = async (paymentId: string, type: 'customer' | 'admin') => {
@@ -2150,6 +2300,8 @@ function PaymentModule({
     }
   };
 
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
   return (
     <div className="space-y-4">
       <Card className="bg-slate-800 border-slate-700">
@@ -2194,6 +2346,7 @@ function PaymentModule({
                         {format(new Date(payment.paymentDate), 'dd MMM yyyy')}
                       </TableCell>
                       <TableCell>
+<<<<<<< HEAD
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button 
@@ -2227,6 +2380,12 @@ function PaymentModule({
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
+=======
+                        <Button variant="ghost" size="sm" className="text-amber-400 hover:text-amber-300">
+                          <Download className="w-4 h-4 mr-1" />
+                          PDF
+                        </Button>
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
                       </TableCell>
                     </TableRow>
                   ))
@@ -2475,9 +2634,12 @@ function SettingsModule({
 }) {
   const [localSettings, setLocalSettings] = useState(settings);
   const [saving, setSaving] = useState(false);
+<<<<<<< HEAD
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [activeTab, setActiveTab] = useState('loan');
+=======
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
 
   useEffect(() => {
     setLocalSettings(settings);
@@ -2503,6 +2665,7 @@ function SettingsModule({
     }
   };
 
+<<<<<<< HEAD
   const handleSignatureUpload = async () => {
     if (!signatureFile) return;
     
@@ -2534,12 +2697,18 @@ function SettingsModule({
   const loanSettings = [
     { key: 'default_interest_rate', label: 'Default Interest Rate (%)', type: 'number' },
     { key: 'max_ltv_ratio', label: 'Max Loan to Value Ratio (%)', type: 'number' },
+=======
+  const settingFields = [
+    { key: 'default_interest_rate', label: 'Default Interest Rate (%)', type: 'number' },
+    { key: 'loan_to_value_ratio', label: 'Max Loan to Value Ratio (%)', type: 'number' },
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     { key: 'penalty_rate', label: 'Penalty Interest Rate (%)', type: 'number' },
     { key: 'yellow_zone_threshold', label: 'Yellow Zone LTV Threshold (%)', type: 'number' },
     { key: 'red_zone_threshold', label: 'Red Zone LTV Threshold (%)', type: 'number' },
     { key: 'overdue_days_red', label: 'Days Overdue for Red Zone', type: 'number' },
   ];
 
+<<<<<<< HEAD
   const companySettings = [
     { key: 'company_name', label: 'Company Name', type: 'text' },
     { key: 'company_address', label: 'Address', type: 'text' },
@@ -2685,6 +2854,43 @@ function SettingsModule({
           </Card>
         </TabsContent>
       </Tabs>
+=======
+  return (
+    <div className="space-y-6">
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white">System Settings</CardTitle>
+          <CardDescription className="text-slate-400">
+            Configure system-wide parameters
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {settingFields.map((field) => (
+            <div key={field.key} className="flex items-center justify-between">
+              <Label className="text-slate-300">{field.label}</Label>
+              <Input
+                type={field.type}
+                value={localSettings[field.key] || ''}
+                onChange={(e) => setLocalSettings({ ...localSettings, [field.key]: e.target.value })}
+                className="w-32 bg-slate-700 border-slate-600 text-white"
+              />
+            </div>
+          ))}
+        </CardContent>
+        <CardFooter>
+          <Button onClick={handleSave} disabled={saving} className="bg-amber-500 hover:bg-amber-600 text-white">
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Settings'
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
+>>>>>>> 04eb435d1a6e92ce3425f7e254d5829ee4bdb0c7
     </div>
   );
 }
