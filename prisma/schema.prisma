@@ -1,0 +1,433 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String         @id @default(cuid())
+  username      String         @unique
+  email         String         @unique
+  password      String
+  name          String?
+  role          UserRole       @default(LOAN_OFFICER)
+  status        UserStatus     @default(ACTIVE)
+  branchId      String?
+  branch        Branch?        @relation(fields: [branchId], references: [id])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  auditLogs     AuditLog[]
+  notes         Note[]
+  payments      Payment[]
+}
+
+enum UserRole {
+  ADMIN
+  BRANCH_MANAGER
+  LOAN_OFFICER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+// ============================================
+// BRANCH MANAGEMENT
+// ============================================
+
+model Branch {
+  id            String         @id @default(cuid())
+  name          String
+  address       String?
+  phone         String?
+  email         String?
+  status        BranchStatus   @default(ACTIVE)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  users         User[]
+  customers     Customer[]
+  loans         Loan[]
+}
+
+enum BranchStatus {
+  ACTIVE
+  INACTIVE
+}
+
+// ============================================
+// CUSTOMER & KYC
+// ============================================
+
+model Customer {
+  id                String          @id @default(cuid())
+  customerId        String          @unique
+  firstName         String
+  lastName          String
+  email             String?
+  phone             String
+  alternatePhone    String?
+  address           String?
+  city              String?
+  state             String?
+  pincode           String?
+  dateOfBirth       DateTime?
+  gender            Gender?
+  occupation        String?
+  annualIncome      Float?
+  status            CustomerStatus  @default(ACTIVE)
+  branchId          String?
+  branch            Branch?         @relation(fields: [branchId], references: [id])
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  kycDocuments      KYCDocument[]
+  ornaments         Ornament[]
+  loans             Loan[]
+  notes             Note[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  BLACKLISTED
+}
+
+model KYCDocument {
+  id            String        @id @default(cuid())
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  documentType  DocumentType
+  documentNumber String
+  documentName  String
+  documentPath  String
+  verified      Boolean       @default(false)
+  verifiedBy    String?
+  verifiedAt    DateTime?
+  uploadedAt    DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum DocumentType {
+  AADHAAR
+  PAN_CARD
+  VOTER_ID
+  PASSPORT
+  DRIVING_LICENSE
+  UTILITY_BILL
+  PHOTO
+  OTHER
+}
+
+// ============================================
+// ORNAMENTS MANAGEMENT
+// ============================================
+
+model Ornament {
+  id              String          @id @default(cuid())
+  ornamentId      String          @unique
+  customerId      String
+  customer        Customer        @relation(fields: [customerId], references: [id])
+  name            String
+  type            OrnamentType
+  metalType       MetalType
+  karat           Float
+  grossWeight     Float
+  netWeight       Float
+  stoneWeight     Float          @default(0)
+  description     String?
+  imagePaths      String?        // JSON array of image paths
+  valuationAmount Float
+  valuationDate   DateTime?
+  status          OrnamentStatus @default(AVAILABLE)
+  loanId          String?
+  loan            Loan?          @relation(fields: [loanId], references: [id])
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+enum OrnamentType {
+  NECKLACE
+  BANGLE
+  RING
+  EARRINGS
+  CHAIN
+  PENDANT
+  BRACELET
+  ANKLET
+  COIN
+  BAR
+  OTHER
+}
+
+enum MetalType {
+  GOLD
+  SILVER
+  PLATINUM
+  OTHER
+}
+
+enum OrnamentStatus {
+  AVAILABLE
+  PLEDGED
+  RELEASED
+  SOLD
+}
+
+// ============================================
+// LOAN MANAGEMENT
+// ============================================
+
+model Loan {
+  id                    String          @id @default(cuid())
+  loanReferenceNumber   String          @unique
+  customerId            String
+  customer              Customer        @relation(fields: [customerId], references: [id])
+  branchId              String?
+  branch                Branch?         @relation(fields: [branchId], references: [id])
+  principalAmount       Float
+  interestRate          Float           // Annual interest rate percentage
+  interestType          InterestType    @default(MONTHLY)
+  tenureMonths          Int?
+  disbursementDate      DateTime        @default(now())
+  dueDate               DateTime?
+  maturityDate          DateTime?
+  status                LoanStatus      @default(ACTIVE)
+  riskZone              RiskZone        @default(GREEN)
+  totalOrnamentValue    Float
+  loanToValueRatio      Float           // LTV ratio
+  outstandingPrincipal  Float
+  outstandingInterest   Float           @default(0)
+  totalInterestPaid     Float           @default(0)
+  totalPrincipalPaid    Float           @default(0)
+  penaltyAmount         Float           @default(0)
+  closedAt              DateTime?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  ornaments             Ornament[]
+  payments              Payment[]
+  interestLedger        InterestLedger[]
+  notes                 Note[]
+  notifications         Notification[]
+}
+
+enum InterestType {
+  DAILY
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  CUSTOM
+}
+
+enum LoanStatus {
+  ACTIVE
+  OVERDUE
+  CLOSED
+  DEFAULTED
+  RENEWED
+}
+
+enum RiskZone {
+  GREEN
+  YELLOW
+  RED
+}
+
+// ============================================
+// INTEREST & PAYMENT MANAGEMENT
+// ============================================
+
+model InterestLedger {
+  id              String      @id @default(cuid())
+  loanId          String
+  loan            Loan        @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  fromDate        DateTime
+  toDate          DateTime
+  interestRate    Float
+  interestAmount  Float
+  penaltyAmount   Float       @default(0)
+  status          PaymentStatus @default(PENDING)
+  paidAmount      Float       @default(0)
+  paidAt          DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  paymentId       String        @unique
+  loanId          String
+  loan            Loan          @relation(fields: [loanId], references: [id])
+  customerId      String?
+  receivedBy      String?
+  receivedByUser  User?         @relation(fields: [receivedBy], references: [id])
+  paymentType     PaymentType
+  amount          Float
+  principalAmount Float         @default(0)
+  interestAmount  Float         @default(0)
+  penaltyAmount   Float         @default(0)
+  paymentMethod   PaymentMethod
+  transactionId   String?
+  receiptNumber   String?
+  notes           String?
+  paymentDate     DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum PaymentType {
+  INTEREST
+  PRINCIPAL
+  BOTH
+  PENALTY
+  PARTIAL_RELEASE
+  FULL_CLOSURE
+}
+
+enum PaymentMethod {
+  CASH
+  UPI
+  BANK_TRANSFER
+  CHEQUE
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIALLY_PAID
+  WAIVED
+}
+
+// ============================================
+// METAL RATES
+// ============================================
+
+model MetalRate {
+  id          String    @id @default(cuid())
+  metalType   MetalType
+  karat       Float
+  ratePerGram Float
+  rateDate    DateTime
+  source      String?   // API or MANUAL
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@unique([metalType, karat, rateDate])
+}
+
+// ============================================
+// NOTIFICATIONS & ALERTS
+// ============================================
+
+model Notification {
+  id            String            @id @default(cuid())
+  loanId        String?
+  loan          Loan?             @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  customerId    String?
+  type          NotificationType
+  title         String
+  message       String
+  priority      NotificationPriority @default(MEDIUM)
+  status        NotificationStatus @default(PENDING)
+  sentAt        DateTime?
+  sentTo        String?
+  channel       NotificationChannel
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+enum NotificationType {
+  LOAN_DUE
+  INTEREST_DUE
+  PAYMENT_RECEIVED
+  RISK_ALERT
+  LOAN_CLOSURE
+  RATE_CHANGE
+  KYC_EXPIRY
+  SYSTEM
+}
+
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  READ
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  IN_APP
+}
+
+// ============================================
+// STAFF NOTES
+// ============================================
+
+model Note {
+  id          String      @id @default(cuid())
+  loanId      String?
+  loan        Loan?       @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  customerId  String?
+  customer    Customer?   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  content     String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  userId      String?
+  user        User?       @relation(fields: [userId], references: [id])
+  action      String
+  module      String
+  recordId    String?
+  oldValues   String?     // JSON
+  newValues   String?     // JSON
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime    @default(now())
+}
+
+// ============================================
+// SETTINGS & CONFIGURATION
+// ============================================
+
+model Setting {
+  id          String    @id @default(cuid())
+  key         String    @unique
+  value       String
+  description String?
+  updatedAt   DateTime  @updatedAt
+}
